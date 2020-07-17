@@ -9,7 +9,7 @@ import path from "path";
 import semver from "semver";
 import util from "util";
 
-import { EthereumProvider, ProjectPaths } from "../../../types";
+import { EthereumProvider, ForkConfig, ProjectPaths } from "../../../types";
 import { SOLC_INPUT_FILENAME, SOLC_OUTPUT_FILENAME } from "../../constants";
 import { CompilerInput, CompilerOutput } from "../stack-traces/compiler-types";
 import { SolidityError } from "../stack-traces/solidity-errors";
@@ -64,7 +64,8 @@ export class BuidlerEVMProvider extends EventEmitter
     private readonly _paths?: ProjectPaths,
     private readonly _loggingEnabled = false,
     private readonly _allowUnlimitedContractSize = false,
-    private readonly _initialDate?: Date
+    private readonly _initialDate?: Date,
+    private readonly _forkConfig?: ForkConfig
   ) {
     super();
   }
@@ -275,7 +276,8 @@ export class BuidlerEVMProvider extends EventEmitter
       this._allowUnlimitedContractSize,
       this._initialDate,
       compilerInput,
-      compilerOutput
+      compilerOutput,
+      this._forkConfig
     );
 
     this._common = common;
