@@ -116,7 +116,7 @@ export interface ResolvedBuidlerConfig extends BuidlerConfig {
 // TODO: figure out if this needs t.types
 export interface ForkConfig {
   jsonRpcUrl: string;
-  blockNumberOrHash?: number | string;
+  blockNumber?: number;
 }
 
 // End config types
