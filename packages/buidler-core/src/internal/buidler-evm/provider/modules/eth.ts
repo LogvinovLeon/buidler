@@ -24,6 +24,7 @@ import {
   UNRECOGNIZED_CONTRACT_NAME,
   UNRECOGNIZED_FUNCTION_NAME,
 } from "../../stack-traces/solidity-stack-trace";
+import { Block } from "../Block";
 import {
   InvalidArgumentsError,
   InvalidInputError,
@@ -54,7 +55,6 @@ import {
   validateParams,
 } from "../input";
 import {
-  Block,
   BuidlerNode,
   CallParams,
   FilterParams,
