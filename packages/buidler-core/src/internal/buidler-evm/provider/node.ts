@@ -130,7 +130,7 @@ export class BuidlerNode extends EventEmitter {
       blockchain = new BuidlerBlockchain();
       const genesisBlock = new Block(null, { common });
       genesisBlock.setGenesisParams();
-      await blockchain.putBlock(genesisBlock);
+      await blockchain.addBlock(genesisBlock);
     }
 
     const vm = new VM({
@@ -560,7 +560,7 @@ export class BuidlerNode extends EventEmitter {
   }
 
   public async getBlockTotalDifficulty(block: Block): Promise<BN> {
-    return this._blockchain.getBlockTotalDifficulty(block.hash());
+    return this._blockchain.getTotalDifficulty(block.hash());
   }
 
   public async getCode(address: Buffer): Promise<Buffer> {
@@ -667,7 +667,7 @@ export class BuidlerNode extends EventEmitter {
     //
     // Note: There's no need to copy the maps here, as snapshots can only be
     // used once
-    this._blockchain.deleteAllFollowingBlocks(snapshot.latestBlock);
+    this._blockchain.deleteLaterBlocks(snapshot.latestBlock);
     await this._stateManager.setStateRoot(snapshot.stateRoot);
     this._blockTimeOffsetSeconds = newOffset;
     this._nextBlockTimestamp = snapshot.nextBlockTimestamp;
@@ -1097,7 +1097,7 @@ export class BuidlerNode extends EventEmitter {
     block: Block,
     runBlockResult: RunBlockResult
   ) {
-    await this._blockchain.putBlock(block);
+    await this._blockchain.addBlock(block);
     const receipts = getRpcTransactionReceipts(block, runBlockResult);
 
     const blockHash = bufferToHex(block.hash());
