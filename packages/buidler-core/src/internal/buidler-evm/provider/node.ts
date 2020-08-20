@@ -546,23 +546,17 @@ export class BuidlerNode extends EventEmitter {
   }
 
   public async getBlockByNumber(blockNumber: BN): Promise<Block | undefined> {
-    return this._blockchain
-      .getBlock(blockNumber)
-      .catch((blockNotFound) => undefined);
+    return this._blockchain.getBlock(blockNumber);
   }
 
   public async getBlockByHash(blockHash: Buffer): Promise<Block | undefined> {
-    return this._blockchain
-      .getBlock(blockHash)
-      .catch((blockNotFound) => undefined);
+    return this._blockchain.getBlock(blockHash);
   }
 
   public async getBlockByTransactionHash(
     hash: Buffer
   ): Promise<Block | undefined> {
-    return this._blockchain
-      .getBlockByTransactionHash(hash)
-      .catch((transactionNotFound) => undefined);
+    return this._blockchain.getBlockByTransactionHash(hash);
   }
 
   public async getBlockTotalDifficulty(block: Block): Promise<BN> {
@@ -589,12 +583,8 @@ export class BuidlerNode extends EventEmitter {
     return this._nextBlockTimestamp;
   }
 
-  public async getSuccessfulTransactionByHash(
-    hash: Buffer
-  ): Promise<Transaction | undefined> {
-    return this._blockchain
-      .getTransaction(hash)
-      .catch((transactionNotFound) => undefined);
+  public async getTransaction(hash: Buffer): Promise<Transaction | undefined> {
+    return this._blockchain.getTransaction(hash);
   }
 
   public async getTransactionReceipt(
@@ -819,7 +809,10 @@ export class BuidlerNode extends EventEmitter {
       i.lte(filterParams.toBlock);
       i = i.addn(1)
     ) {
-      const block = await this._blockchain.getBlock(new BN(i));
+      const block = await this.getBlockByNumber(new BN(i));
+      if (block === undefined) {
+        continue;
+      }
       const receipts = this._blockHashToTxReceipts.get(
         bufferToHex(block.hash())
       );
