@@ -587,13 +587,7 @@ export class BuidlerNode extends EventEmitter {
   public async getTransactionReceipt(
     hash: Buffer
   ): Promise<RpcReceiptOutput | undefined> {
-    const block = await this.getBlockByTransactionHash(hash);
-    if (block === undefined) {
-      return undefined;
-    }
-    const index = block.transactions.findIndex((tx) => tx.hash().equals(hash));
-    const receipts = this._blockHashToReceipts.get(bufferToHex(block.hash()));
-    return receipts?.[index];
+    return this._blockchain.getTransactionReceipt(hash);
   }
 
   public async getPendingTransactions(): Promise<Transaction[]> {
@@ -1096,6 +1090,7 @@ export class BuidlerNode extends EventEmitter {
     const receipts = getRpcReceipts(block, runBlockResult);
 
     const blockHash = bufferToHex(block.hash());
+    this._blockchain.addTransactionReceipts(receipts);
     this._blockHashToReceipts.set(blockHash, receipts);
 
     const td = await this.getBlockTotalDifficulty(block);
