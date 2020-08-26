@@ -32,14 +32,14 @@ import {
 } from "../errors";
 import { LATEST_BLOCK } from "../filter";
 import {
-  blockTag,
   BlockTag,
+  blockTag as blockTagType,
   LogAddress,
   LogTopics,
   OptionalBlockTag,
   optionalBlockTag,
-  optionalRpcFilterRequest,
   OptionalRpcFilterRequest,
+  optionalRpcFilterRequest,
   rpcAddress,
   rpcCallRequest,
   RpcCallRequest,
@@ -444,7 +444,7 @@ export class EthModule {
   // eth_getBlockByNumber
 
   private _getBlockByNumberParams(params: any[]): [BlockTag, boolean] {
-    return validateParams(params, blockTag, t.boolean);
+    return validateParams(params, blockTagType, t.boolean);
   }
 
   private async _getBlockByNumberAction(
