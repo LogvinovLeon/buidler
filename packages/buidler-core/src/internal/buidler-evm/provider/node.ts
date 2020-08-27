@@ -15,6 +15,7 @@ import {
   ecsign,
   hashPersonalMessage,
   privateToAddress,
+  stripZeros,
   toBuffer,
 } from "ethereumjs-util";
 import EventEmitter from "events";
@@ -522,7 +523,7 @@ export class BuidlerNode extends EventEmitter {
 
   public async getStorageAt(address: Buffer, slot: BN): Promise<Buffer> {
     const key = slot.toArrayLike(Buffer, "be", 32);
-    const data = await this._stateManager.getContractStorage(address, key);
+    let data = await this._stateManager.getContractStorage(address, key);
 
     // TODO: The state manager returns the data as it was saved, it doesn't
     //  pad it. Technically, the storage consists of 32-byte slots, so we should
@@ -537,6 +538,11 @@ export class BuidlerNode extends EventEmitter {
     //     EXPECTED_DATA_SIZE
     //   );
     // }
+
+    // TODO: remove this line once the above problem is solved
+    //  This is here to make ForkStateManager return values compatible with
+    //  the VM's state manager unpadded format
+    data = stripZeros(data);
 
     return data;
   }
