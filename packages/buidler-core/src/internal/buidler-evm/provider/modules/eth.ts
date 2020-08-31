@@ -9,6 +9,7 @@ import {
   zeroAddress,
 } from "ethereumjs-util";
 import * as t from "io-ts";
+import cloneDeep from "lodash/cloneDeep";
 import util from "util";
 
 import { weiToHumanReadableString } from "../../../util/wei-values";
@@ -597,7 +598,8 @@ export class EthModule {
     filter: RpcFilterRequest
   ): Promise<RpcLogOutput[]> {
     const filterParams = await this._rpcFilterRequestToGetLogsParams(filter);
-    return this._node.getLogs(filterParams);
+    const logs = await this._node.getLogs(filterParams);
+    return cloneDeep(logs);
   }
 
   // eth_getProof
@@ -753,7 +755,7 @@ export class EthModule {
     if (receipt === undefined) {
       return null;
     }
-    return receipt;
+    return cloneDeep(receipt);
   }
 
   // eth_getUncleByBlockHashAndIndex
