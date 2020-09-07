@@ -103,13 +103,13 @@ export class EthModule {
         return this._coinbaseAction(...this._coinbaseParams(params));
 
       case "eth_compileLLL":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_compileSerpent":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_compileSolidity":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_estimateGas":
         return this._estimateGasAction(...this._estimateGasParams(params));
@@ -144,7 +144,7 @@ export class EthModule {
         return this._getCodeAction(...this._getCodeParams(params));
 
       case "eth_getCompilers":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getFilterChanges":
         return this._getFilterChangesAction(
@@ -158,7 +158,7 @@ export class EthModule {
         return this._getLogsAction(...this._getLogsParams(params));
 
       case "eth_getProof":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getStorageAt":
         return this._getStorageAtAction(...this._getStorageAtParams(params));
@@ -189,22 +189,22 @@ export class EthModule {
         );
 
       case "eth_getUncleByBlockHashAndIndex":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getUncleByBlockNumberAndIndex":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getUncleCountByBlockHash":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getUncleCountByBlockNumber":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_getWork":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_hashrate":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_mining":
         return this._miningAction(...this._miningParams(params));
@@ -228,7 +228,7 @@ export class EthModule {
         );
 
       case "eth_protocolVersion":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_sendRawTransaction":
         return this._sendRawTransactionAction(
@@ -244,16 +244,16 @@ export class EthModule {
         return this._signAction(...this._signParams(params));
 
       case "eth_signTransaction":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_signTypedData":
         return this._signTypedDataAction(...this._signTypedDataParams(params));
 
       case "eth_submitHashrate":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_submitWork":
-        throw new MethodNotSupportedError(`Method ${method} is not supported`);
+        throw new MethodNotSupportedError(method);
 
       case "eth_subscribe":
         return this._subscribeAction(...this._subscribeParams(params));
