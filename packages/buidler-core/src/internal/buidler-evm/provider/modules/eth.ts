@@ -317,7 +317,9 @@ export class EthModule {
       this._shouldCallOnNewBlock(blockTag)
     );
 
-    await this._logCallTrace(callParams, trace);
+    if (trace !== undefined) {
+      await this._logCallTrace(callParams, trace);
+    }
 
     this._logConsoleLogMessages(consoleLogMessages);
 
@@ -387,7 +389,9 @@ export class EthModule {
     } = await this._node.estimateGas(txParams);
 
     if (error !== undefined) {
-      await this._logEstimateGasTrace(txParams, trace);
+      if (trace !== undefined) {
+        await this._logEstimateGasTrace(txParams, trace);
+      }
 
       this._logConsoleLogMessages(consoleLogMessages);
 
@@ -1292,7 +1296,9 @@ If this error persists, try resetting your wallet's accounts.`
       error,
     } = await this._node.runTransactionInNewBlock(tx);
 
-    await this._logTransactionTrace(tx, trace, block, blockResult);
+    if (trace !== undefined) {
+      await this._logTransactionTrace(tx, trace, block, blockResult);
+    }
 
     this._logConsoleLogMessages(consoleLogMessages);
 
