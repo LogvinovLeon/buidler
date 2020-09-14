@@ -8,7 +8,7 @@ export interface AccountState {
   storageCleared: boolean;
 }
 
-export const makeAccountState = ImmutableRecord<AccountState>({
+export const makeAccountState = ImmutableRecord({
   nonce: undefined,
   balance: undefined,
   storage: ImmutableMap(),

@@ -19,7 +19,7 @@ import { randomHash } from "./random";
 
 /* tslint:disable only-buidler-error */
 
-type State = ImmutableMap<string, ImmutableRecord<AccountState>>;
+type State = ImmutableMap<string, ImmutableMap<keyof AccountState, any>>;
 
 const encodeStorageKey = (address: Buffer, position: Buffer): string => {
   return `${address.toString("hex")}${stripZeros(position).toString("hex")}`;
