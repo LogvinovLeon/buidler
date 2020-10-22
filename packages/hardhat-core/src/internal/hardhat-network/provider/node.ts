@@ -61,6 +61,7 @@ import {
   RpcLogOutput,
   RpcReceiptOutput,
 } from "./output";
+import { TxPool } from "./TxPool";
 import { Block } from "./types/Block";
 import { PBlockchain } from "./types/PBlockchain";
 import { PStateManager } from "./types/PStateManager";
@@ -132,6 +133,11 @@ export class HardhatNode extends EventEmitter {
       }
     }
 
+    const txPool = new TxPool(
+      asPStateManager(stateManager),
+      new BN(blockGasLimit)
+    );
+
     const vm = new VM({
       common,
       activatePrecompiles: true,
@@ -144,7 +150,7 @@ export class HardhatNode extends EventEmitter {
       vm,
       asPStateManager(stateManager),
       blockchain,
-      new BN(blockGasLimit),
+      txPool,
 
       initialBlockTimeOffset,
       genesisAccounts,
@@ -175,7 +181,7 @@ export class HardhatNode extends EventEmitter {
     private readonly _vm: VM,
     private readonly _stateManager: PStateManager,
     private readonly _blockchain: PBlockchain,
-    private readonly _blockGasLimit: BN,
+    private readonly _txPool: TxPool,
     private _blockTimeOffsetSeconds: BN = new BN(0),
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig
@@ -468,7 +474,7 @@ export class HardhatNode extends EventEmitter {
   }
 
   public async getBlockGasLimit(): Promise<BN> {
-    return this._blockGasLimit;
+    return this._txPool.getBlockGasLimit();
   }
 
   public async estimateGas(
@@ -1023,7 +1029,7 @@ export class HardhatNode extends EventEmitter {
     const block = new Block(
       {
         header: {
-          gasLimit: this._blockGasLimit,
+          gasLimit: await this.getBlockGasLimit(),
           nonce: "0x42",
           timestamp,
         },
@@ -1201,9 +1207,10 @@ If you are using a wallet or dapp, try resetting your wallet's accounts.`
       );
     }
 
-    if (gasLimit.gt(this._blockGasLimit)) {
+    const blockGasLimit = await this.getBlockGasLimit();
+    if (gasLimit.gt(blockGasLimit)) {
       throw new InvalidInputError(
-        `Transaction gas limit is ${gasLimit} and exceeds block gas limit of ${this._blockGasLimit}`
+        `Transaction gas limit is ${gasLimit} and exceeds block gas limit of ${blockGasLimit}`
       );
     }
   }
