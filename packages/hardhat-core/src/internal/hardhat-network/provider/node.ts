@@ -92,6 +92,7 @@ export class HardhatNode extends EventEmitter {
     config: NodeConfig
   ): Promise<[Common, HardhatNode]> {
     const {
+      autoMine,
       genesisAccounts,
       blockGasLimit,
       allowUnlimitedContractSize,
@@ -151,7 +152,7 @@ export class HardhatNode extends EventEmitter {
       asPStateManager(stateManager),
       blockchain,
       txPool,
-
+      autoMine,
       initialBlockTimeOffset,
       genesisAccounts,
       tracingConfig
@@ -182,6 +183,7 @@ export class HardhatNode extends EventEmitter {
     private readonly _stateManager: PStateManager,
     private readonly _blockchain: PBlockchain,
     private readonly _txPool: TxPool,
+    private readonly _automine: boolean,
     private _blockTimeOffsetSeconds: BN = new BN(0),
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig
