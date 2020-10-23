@@ -2961,7 +2961,7 @@ describe("Eth module", function () {
           await assertTransactionFailure(
             this.provider,
             txParams,
-            `known transaction: ${bufferToHex(hash)}`
+            `Known transaction: ${bufferToHex(hash)}`
           );
         });
       });
