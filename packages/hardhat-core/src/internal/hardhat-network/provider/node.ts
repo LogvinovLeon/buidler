@@ -264,13 +264,6 @@ export class HardhatNode extends EventEmitter {
     error?: Error;
     consoleLogMessages: string[];
   }> {
-    // Geth throws this error if a tx is sent twice
-    if (this._transactionWasSuccessful(tx)) {
-      throw new InvalidInputError(
-        `known transaction: ${bufferToHex(tx.hash(true)).toString()}`
-      );
-    }
-
     await this._txPool.addTransaction(tx);
     await this._validateTransaction(tx);
     await this._notifyPendingTransaction(tx);
@@ -1185,8 +1178,6 @@ export class HardhatNode extends EventEmitter {
   }
 
   private async _validateTransaction(tx: Transaction) {
-    
-
     if (!tx.verifySignature()) {
       throw new InvalidInputError("Invalid transaction signature");
     }
