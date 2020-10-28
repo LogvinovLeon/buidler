@@ -54,6 +54,7 @@ import {
   CallParams,
   FilterParams,
   GenesisAccount,
+  IntervalMiningConfig,
   NodeConfig,
   RunTransactionResult,
   Snapshot,
@@ -99,6 +100,7 @@ export class HardhatNode extends EventEmitter {
   ): Promise<[Common, HardhatNode]> {
     const {
       automine,
+      intervalMiningConfig,
       genesisAccounts,
       blockGasLimit,
       allowUnlimitedContractSize,
@@ -160,6 +162,7 @@ export class HardhatNode extends EventEmitter {
       blockchain,
       txPool,
       automine,
+      intervalMiningConfig,
       initialBlockTimeOffset,
       genesisAccounts,
       tracingConfig
@@ -193,6 +196,7 @@ export class HardhatNode extends EventEmitter {
     private readonly _blockchain: PBlockchain,
     private readonly _txPool: TxPool,
     private _automine: boolean,
+    private _intervalMiningConfig: IntervalMiningConfig,
     private _blockTimeOffsetSeconds: BN = new BN(0),
     genesisAccounts: GenesisAccount[],
     tracingConfig?: TracingConfig
