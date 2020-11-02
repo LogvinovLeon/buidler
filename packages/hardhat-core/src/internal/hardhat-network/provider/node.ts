@@ -56,7 +56,6 @@ import {
   CallParams,
   FilterParams,
   GenesisAccount,
-  IntervalMiningConfig,
   NodeConfig,
   RunTransactionResult,
   Snapshot,
@@ -102,7 +101,7 @@ export class HardhatNode extends EventEmitter {
   ): Promise<[Common, HardhatNode]> {
     const {
       automine,
-      intervalMiningConfig,
+      intervalMining,
       genesisAccounts,
       blockGasLimit,
       allowUnlimitedContractSize,
@@ -164,8 +163,8 @@ export class HardhatNode extends EventEmitter {
       blockchain,
       txPool,
       automine,
-      intervalMiningConfig.enabled,
-      intervalMiningConfig.blockTime ?? 10000, // FIXME: Is it okay to leave 10000 here?
+      intervalMining.enabled,
+      intervalMining.blockTime,
       initialBlockTimeOffset,
       genesisAccounts,
       tracingConfig
@@ -319,8 +318,7 @@ export class HardhatNode extends EventEmitter {
     ] = this._calculateTimestampAndOffset(timestamp);
 
     const block = await this._getNextBlockTemplate(blockTimestamp);
-    console.log('before', bufferToInt(block.header.number));
-
+    console.log("before", bufferToInt(block.header.number));
 
     const needsTimestampIncrease = await this._timestampClashesWithPreviousBlockOne(
       block
@@ -331,7 +329,6 @@ export class HardhatNode extends EventEmitter {
     }
 
     await this._updateTransactionsRoot(block);
-
 
     const previousRoot = await this._stateManager.getStateRoot();
 
