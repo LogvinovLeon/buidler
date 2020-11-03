@@ -54,7 +54,6 @@ import {
   CallParams,
   FilterParams,
   GenesisAccount,
-  MineBlockResult,
   NodeConfig,
   RunTransactionResult,
   Snapshot,
@@ -276,14 +275,11 @@ export class HardhatNode extends EventEmitter {
   }
 
   public async mineBlock() {
-    const [blockTimestamp] = this._calculateTimestampAndOffset();
-    const blockTemplate = await this._getNextBlockTemplate(blockTimestamp);
-
     const previousRoot = await this._stateManager.getStateRoot();
     let block: Block;
     let result: RunBlockResult;
     try {
-      ({ block, ...result } = await this._mineBlock(blockTemplate));
+      [block, result] = await this._mineBlock();
     } catch (error) {
       await this._stateManager.setStateRoot(previousRoot);
       throw new TransactionExecutionError(error);
@@ -836,7 +832,11 @@ export class HardhatNode extends EventEmitter {
     this._blockTime = blockTime;
   }
 
-  private async _mineBlock(block: Block): Promise<MineBlockResult> {
+  private async _mineBlock(): Promise<[Block, RunBlockResult]> {
+    const [blockTimestamp] = this._calculateTimestampAndOffset();
+    const block = await this._getNextBlockTemplate(blockTimestamp);
+
+    const gasUsed = new BN(0);
     const bloom = new Bloom();
     const results: RunTxResult[] = [];
     const receipts: TxReceipt[] = [];
@@ -847,8 +847,9 @@ export class HardhatNode extends EventEmitter {
     let tx = txHeap.peek();
     while (tx !== undefined) {
       const txResult = await this._vm.runTx({ tx, block });
-      results.push(txResult);
+      gasUsed.iadd(txResult.gasUsed);
       bloom.or(txResult.bloom);
+      results.push(txResult);
       receipts.push(this._createReceipt(txResult));
       await this._addTransactionToBlock(block, tx);
 
@@ -857,14 +858,17 @@ export class HardhatNode extends EventEmitter {
     }
 
     // TODO assign block reward
+    block.header.gasUsed = toBuffer(gasUsed);
     block.header.stateRoot = await this._stateManager.getStateRoot();
     block.header.bloom = bloom.bitvector;
 
-    return {
+    return [
       block,
-      results,
-      receipts,
-    };
+      {
+        results,
+        receipts,
+      },
+    ];
   }
 
   private _createReceipt(txResult: RunTxResult): TxReceipt {
