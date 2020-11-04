@@ -1000,7 +1000,7 @@ export class EthModule {
       gasLimit:
         rpcCall.gas !== undefined
           ? rpcCall.gas
-          : await this._node.getBlockGasLimit(),
+          : this._node.getBlockGasLimit(),
       gasPrice:
         rpcCall.gasPrice !== undefined
           ? rpcCall.gasPrice
@@ -1018,7 +1018,7 @@ export class EthModule {
       gasLimit:
         rpcTx.gas !== undefined
           ? rpcTx.gas
-          : await this._node.getBlockGasLimit(),
+          : this._node.getBlockGasLimit(),
       gasPrice:
         rpcTx.gasPrice !== undefined
           ? rpcTx.gasPrice
