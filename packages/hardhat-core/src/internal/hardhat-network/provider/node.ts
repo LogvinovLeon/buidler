@@ -84,6 +84,7 @@ import { makeStateTrie } from "./utils/makeStateTrie";
 import { minBuffer } from "./utils/minBuffer";
 import { putGenesisAccounts } from "./utils/putGenesisAccounts";
 import { putGenesisBlock } from "./utils/putGenesisBlock";
+import { txMapToArray } from "./utils/txMapToArray";
 
 const log = debug("hardhat:core:hardhat-network:node");
 
@@ -620,9 +621,7 @@ export class HardhatNode extends EventEmitter {
   }
 
   public async getPendingTransactions(): Promise<Transaction[]> {
-    return flatten(
-      Array.from(this._txPool.getPendingTransactions().values())
-    ).map((tx) => tx.data);
+    return txMapToArray(this._txPool.getPendingTransactions());
   }
 
   public async signPersonalMessage(
