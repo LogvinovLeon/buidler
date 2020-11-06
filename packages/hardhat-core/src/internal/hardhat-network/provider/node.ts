@@ -312,8 +312,12 @@ export class HardhatNode extends EventEmitter {
     }
   }
 
-  public async mineBlock() {
-    const [blockTimestamp] = this._calculateTimestampAndOffset();
+  public async mineBlock(timestamp?: BN) {
+    const [
+      blockTimestamp,
+      offsetShouldChange,
+      newOffset,
+    ] = this._calculateTimestampAndOffset(timestamp);
     const needsTimestampIncrease = await this._timestampClashesWithPreviousBlockOne(
       blockTimestamp
     );
@@ -331,11 +335,17 @@ export class HardhatNode extends EventEmitter {
       throw new TransactionExecutionError(error);
     }
 
+    await this._saveBlockAsSuccessfullyRun(block, result);
+
     if (needsTimestampIncrease) {
       await this.increaseTime(new BN(1));
     }
 
-    await this._saveBlockAsSuccessfullyRun(block, result);
+    if (offsetShouldChange) {
+      this._blockTimeOffsetSeconds = newOffset;
+    }
+
+    await this._resetNextBlockTimestamp();
   }
 
   public async mineEmptyBlock(timestamp: BN) {
