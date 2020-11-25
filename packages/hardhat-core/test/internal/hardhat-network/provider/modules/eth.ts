@@ -3173,7 +3173,7 @@ describe("Eth module", function () {
             );
           });
 
-          it("Should throw if the transaction fails", async function () {
+          it.only("Should throw if the transaction fails", async function () {
             // Not enough gas
             await assertInvalidInputError(
               this.provider,
@@ -3274,6 +3274,19 @@ describe("Eth module", function () {
         describe("when automine is disabled", () => {
           beforeEach(async function () {
             await this.provider.send("evm_setAutomineEnabled", [false]);
+          });
+
+          it("does not throw the error of a tx that was mined along the sent tx", async function () {
+            await this.provider.send("eth_sendTransaction", [
+              {
+                from: DEFAULT_ACCOUNTS_ADDRESSES[0],
+                data: "0xAA",
+                gasPrice: numberToRpcQuantity(1),
+                nonce: numberToRpcQuantity(0),
+              },
+            ]);
+            await this.provider.send("evm_setAutomineEnabled", [true]);
+            await assert.isFulfilled(sendTxToZeroAddress(this.provider));
           });
 
           it("Should not throw if the tx nonce is higher than the account nonce", async function () {

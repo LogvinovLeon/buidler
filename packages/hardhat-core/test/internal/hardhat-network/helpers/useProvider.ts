@@ -51,7 +51,7 @@ export function useProvider(
       intervalMining,
       accounts,
       undefined,
-      undefined,
+      true,
       allowUnlimitedContractSize,
       undefined,
       undefined,
