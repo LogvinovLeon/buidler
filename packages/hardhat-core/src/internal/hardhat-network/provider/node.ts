@@ -283,15 +283,12 @@ export class HardhatNode extends EventEmitter {
   public async mineBlock(returnResult?: false, timestamp?: BN): Promise<void>;
   // prettier-ignore
   public async mineBlock(returnResult = false, timestamp?: BN): Promise<RunTransactionResult | void> {
-    const [block, blockResult] = await this._mineAndSaveBlock(timestamp);
+    const [block, blockResult, traces] = await this._mineAndSaveBlock(timestamp);
     if (returnResult) {
-      const traces = await this._gatherTraces(
-        blockResult.results[0].execResult // TODO-Ethworks handle other transactions
-      );
       return {
         block,
         blockResult,
-        ...traces,
+        traces,
       };
     }
   }
@@ -850,7 +847,7 @@ export class HardhatNode extends EventEmitter {
 
   private async _mineAndSaveBlock(
     timestamp?: BN
-  ): Promise<[Block, RunBlockResult]> {
+  ): Promise<[Block, RunBlockResult, GatherTracesResult[]]> {
     const [
       blockTimestamp,
       offsetShouldChange,
@@ -866,8 +863,11 @@ export class HardhatNode extends EventEmitter {
     const previousRoot = await this._stateManager.getStateRoot();
     let block: Block;
     let result: RunBlockResult;
+    let traces: GatherTracesResult[];
     try {
-      [block, result] = await this._mineBlockWithPendingTxs(blockTimestamp);
+      [block, result, traces] = await this._mineBlockWithPendingTxs(
+        blockTimestamp
+      );
     } catch (error) {
       await this._stateManager.setStateRoot(previousRoot);
       throw new TransactionExecutionError(error);
@@ -885,17 +885,18 @@ export class HardhatNode extends EventEmitter {
 
     await this._resetNextBlockTimestamp();
 
-    return [block, result];
+    return [block, result, traces];
   }
 
   private async _mineBlockWithPendingTxs(
     blockTimestamp: BN
-  ): Promise<[Block, RunBlockResult]> {
+  ): Promise<[Block, RunBlockResult, GatherTracesResult[]]> {
     const block = await this._getNextBlockTemplate(blockTimestamp);
 
     const bloom = new Bloom();
     const results: RunTxResult[] = [];
     const receipts: TxReceipt[] = [];
+    const traces: GatherTracesResult[] = [];
 
     const blockGasLimit = this.getBlockGasLimit();
     const minTxFee = this._getMinimalTransactionFee();
@@ -910,6 +911,7 @@ export class HardhatNode extends EventEmitter {
         bloom.or(txResult.bloom);
         results.push(txResult);
         receipts.push(this._createReceipt(txResult));
+        traces.push(await this._gatherTraces(txResult.execResult));
         block.transactions.push(tx);
 
         gasLeft.isub(txResult.gasUsed);
@@ -933,6 +935,7 @@ export class HardhatNode extends EventEmitter {
         results,
         receipts,
       },
+      traces,
     ];
   }
 
